@@ -1,0 +1,14 @@
+# Rapports générés localement (garde seulement examples/sample_report.md)
+audit_report*.md
+!examples/sample_report.md
+
+# Secrets : ne jamais publier
+*.pem
+*.key
+id_rsa*
+.env
+
+# Fichiers système / éditeur
+.DS_Store
+Thumbs.db
+*.swp
