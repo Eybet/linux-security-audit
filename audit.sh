@@ -39,12 +39,13 @@ check_file_permissions() {
     fi
 }
 
-# check_uid0(){
-#     local comptes
-#     comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd)
-#     if [["$comptes" == "root" ]] ; then
+check_uid0(){
+    local comptes
+    comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd)
+    if [["$comptes" == "root" ]] ; then
+     record "PASS" "-" "Un seul compte UID 0" "root uniquement"
       
-# }
+}
 
 
 generate_report() {
