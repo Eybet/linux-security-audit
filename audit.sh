@@ -43,7 +43,7 @@ check_uid0(){
     local comptes
     comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd)
     if [["$comptes" == "root" ]] ; then
-     record 
+      
 }
 
 
