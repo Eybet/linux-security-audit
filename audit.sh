@@ -1,25 +1,13 @@
 #!/usr/bin/env bash
-#
-# audit.sh — Linux Security Audit Tool
-# Lit la configuration de securite d'une machine Linux et genere un rapport
-# Markdown avec un score. LECTURE SEULE : ne modifie jamais le systeme.
-#
+
 set -uo pipefail
 
-# ---------------------------------------------------------------------------
-# Variables globales
-# ---------------------------------------------------------------------------
-REPORT="audit_report.md"     # fichier de sortie
-SCORE=100                    # le score part de 100
-declare -a ROWS              # tableau qui stocke les lignes de resultat
 
-# ---------------------------------------------------------------------------
-# record : enregistre le resultat d'un controle et ajuste le score
-#   $1 = statut   (PASS | FAIL | NA)
-#   $2 = gravite  (critique | moyen | faible | -)
-#   $3 = titre court
-#   $4 = detail / recommandation
-# ---------------------------------------------------------------------------
+REPORT="audit_report.md"     
+SCORE=100                    
+declare -a ROWS              
+
+
 record() {
     local statut="$1" gravite="$2" titre="$3" detail="$4"
     if [[ "$statut" == "FAIL" ]]; then
@@ -32,9 +20,7 @@ record() {
     ROWS+=("| $statut | $gravite | $titre | $detail |")
 }
 
-# ---------------------------------------------------------------------------
-# Controle 1 : droits de /etc/passwd et /etc/shadow
-# ---------------------------------------------------------------------------
+
 check_file_permissions() {
     local perm_passwd perm_shadow
 
@@ -53,9 +39,7 @@ check_file_permissions() {
     fi
 }
 
-# ---------------------------------------------------------------------------
-# Generation du rapport Markdown
-# ---------------------------------------------------------------------------
+
 generate_report() {
     {
         echo "# Rapport d'audit de securite"
@@ -71,12 +55,10 @@ generate_report() {
     echo "Rapport genere : $REPORT  (score $SCORE/100)"
 }
 
-# ---------------------------------------------------------------------------
-# Programme principal
-# ---------------------------------------------------------------------------
+
 main() {
     check_file_permissions
-    # les prochains controles s'ajouteront ici
+    
     generate_report
 }
 
