@@ -89,10 +89,24 @@ check_open_ports(){
 
     fi
 
-    
+
     }
 
+  check_world_writable(){
+    local files
+    files==$(find / -xdev -type f -perm -0002 \
+                   -not -path '/proc/*' -not -path '/sys/*' 2>/dev/nul )
+    
+    if [[-z "$files"]] then
+    record "PASS" "_" "Fichiers world-writable" "Aucun fichier"
 
+    else
+     local nb=$( echo "$files" | wc -l)
+     local liste=$(echo "$files" | head -3 | paste -sd ',' -)
+     record "FAIL" "moyen" "$nb Fichier world-writable" "Exemples . $liste"
+    
+    fi
+  }
 
 
 
@@ -120,6 +134,8 @@ main() {
     checkUID0
     checkSSH
     checkUFW
+    check_open_ports
+    check_world_writable
     generate_report
 }
 
