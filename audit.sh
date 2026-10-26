@@ -42,7 +42,7 @@ checkUID0(){
   local comptes
   comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd | paste -sd ',' -)
 
-  if [[" $comptes" == "root" ]]; then
+  if [[ "$comptes" == "root" ]]; then
    record "PASS" "-" "Un seul compte UID 0 " "root uniquement"
   else
     record "FAIL" "critique" "Comptes UID 0 multiples" "Trouves : $comptes"
@@ -52,7 +52,7 @@ checkUID0(){
 
 checkSSH(){
     local file="/etc/ssh/sshd_config"
-    if[[! -f ${file}]] then
+    if[[ ! -f ${file} ]]; then
      record "NA" "_" "ssh configuration" "sshd non installe"
       if grep -Eiq '^[[:space:]]*PermitRootLogin[[:space:]]+yes' "$file"; then
         record "FAIL" "critique" "SSH PermitRootLogin yes" "Mettre PermitRootLogin no"
@@ -82,7 +82,7 @@ check_open_ports(){
      return
      fi
     
-    local ports=$(ss -tuln | awk  'NR>1 {print $5}'  | paste -sd '' -)
+    local ports=$(ss -tuln | awk  'NR>1 {print $5}'  | sort -u | tr '\n' ',' | sed 's/,$//')
     if [[ -z "$ports" ]]; then
         record "NA" "_" "Ports ouverts" "Aucun port ouvert"
     else
@@ -96,14 +96,14 @@ check_open_ports(){
   check_world_writable(){
     local files
     files==$(sudo find / -xdev -type f -perm -0002 \
-                   -not -path '/proc/*' -not -path '/sys/*' 2>/dev/nul )
+                   -not -path '/proc/*' -not -path '/sys/*' 2>/dev/null )
     
     if [[ -z "$files" ]]; then
     record "PASS" "_" "Fichiers world-writable" "Aucun fichier"
 
     else
      local nb=$( echo "$files" | wc -l)
-     local liste=$(echo "$files" | head -3 | paste -sd ',' -)
+     local liste=$(echo "$files" | head -3 |  tr '\n' ',' | sed 's/,$//')
      record "FAIL" "moyen" "$nb Fichier world-writable" "Exemples . $liste"
     
     fi
