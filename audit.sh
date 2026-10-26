@@ -1,17 +1,11 @@
-#!/usr/bin/env bash
-#
-# audit.sh — Linux Security Audit Tool
-# Lit la configuration de securite d'une machine Linux et genere un rapport
-# Markdown avec un score. LECTURE SEULE : ne modifie jamais le systeme.
-#
+
 set -uo pipefail
 
 REPORT="audit_report.md"
 SCORE=100
 declare -a ROWS
 
-# record : enregistre un resultat et ajuste le score
-#   $1 statut (PASS|FAIL|NA)  $2 gravite  $3 titre  $4 detail
+
 record() {
     local statut="$1" gravite="$2" titre="$3" detail="$4"
     if [[ "$statut" == "FAIL" ]]; then
@@ -19,12 +13,13 @@ record() {
             critique) SCORE=$((SCORE - 20)) ;;
             moyen)    SCORE=$((SCORE - 10)) ;;
             faible)   SCORE=$((SCORE - 5))  ;;
+            absence)  SCORE=$((SCORE -2)) ;;
         esac
     fi
     ROWS+=("| $statut | $gravite | $titre | $detail |")
 }
 
-# ---- Controle 1 : droits de /etc/passwd et /etc/shadow ----
+
 check_file_permissions() {
     local perm_passwd perm_shadow
     perm_passwd=$(stat -c '%a' /etc/passwd 2>/dev/null)
@@ -53,6 +48,7 @@ checkUID0(){
     fi
 }
 
+
 checkSSH(){
     local file="/etc/ssh/sshd_config"
     if[[! -f ${file}]] then
@@ -61,6 +57,20 @@ checkSSH(){
         record "FAIL" "critique" "SSH PermitRootLogin yes" "Mettre PermitRootLogin no"
     else
         record "PASS" "-" "SSH root login" "Non autorise"
+    fi
+}
+
+
+checkUFW() { 
+    if ! command -v ufw >/dev/null 2>&1; then
+     record "NA" "absence" "firewall not installed" "manque de ufw"
+     return
+    fi
+    if ufw status 2>/dev/null | grep -qi "Status: active"; then
+     record "PASS" "_" "ufw trouvé et actif" " "ufw active"
+
+    else 
+      record "FAIL" "moyen" "Pare-feu incatif" "Activer : ufw enable"
     fi
 }
 
