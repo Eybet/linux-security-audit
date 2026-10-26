@@ -43,8 +43,11 @@ check_uid0(){
     local comptes
     comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd)
     if [["$comptes" == "root" ]] ; then
-     record "PASS" "-" "Un seul compte UID 0" "root uniquement"
-      
+    record "PASS" "-" "Un seul compte UID 0" "root uniquement"
+    else
+     record "FAIL" "critque" "Comptes YUID 0 multiples " " attendu que root"
+    
+    fi
 }
 
 
