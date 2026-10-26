@@ -40,13 +40,13 @@ check_file_permissions() {
 
 checkUID0(){
   local comptes
-  comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd)
+  comptes=$(awk -F: '$3==0 {print $1}' /etc/passwd | paste -sd ',' -)
 
-  if [["$comptes" == "root"]] then
+  if [[" $comptes" == "root" ]]; then
    record "PASS" "-" "Un seul compte UID 0 " "root uniquement"
   else
     record "FAIL" "critique" "Comptes UID 0 multiples" "Trouves : $comptes"
-    fi
+  fi
 }
 
 
@@ -83,7 +83,7 @@ check_open_ports(){
      fi
     
     local ports=$(ss -tuln | awk  'NR>1 {print $5}'  | paste -sd '' -)
-    if [[ -z "$ports"]] then
+    if [[ -z "$ports" ]]; then
         record "NA" "_" "Ports ouverts" "Aucun port ouvert"
     else
     record "PASS" "_" "Ports ouverts" "Ports ouverts : $ports"
@@ -98,7 +98,7 @@ check_open_ports(){
     files==$(sudo find / -xdev -type f -perm -0002 \
                    -not -path '/proc/*' -not -path '/sys/*' 2>/dev/nul )
     
-    if [[-z "$files"]] then
+    if [[ -z "$files" ]]; then
     record "PASS" "_" "Fichiers world-writable" "Aucun fichier"
 
     else
