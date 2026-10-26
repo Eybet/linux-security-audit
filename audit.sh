@@ -57,7 +57,11 @@ checkSSH(){
     local file="/etc/ssh/sshd_config"
     if[[! -f ${file}]] then
      record "NA" "_" "ssh configuration" "sshd non installe"
-     
+      if grep -Eiq '^[[:space:]]*PermitRootLogin[[:space:]]+yes' "$file"; then
+        record "FAIL" "critique" "SSH PermitRootLogin yes" "Mettre PermitRootLogin no"
+    else
+        record "PASS" "-" "SSH root login" "Non autorise"
+    fi
 }
 
 
