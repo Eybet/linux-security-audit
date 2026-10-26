@@ -67,12 +67,34 @@ checkUFW() {
      return
     fi
     if ufw status 2>/dev/null | grep -qi "Status: active"; then
-     record "PASS" "_" "ufw trouvé et actif" " "ufw active"
+     record "PASS" "_" "ufw trouvé et actif" "ufw active"
 
     else 
       record "FAIL" "moyen" "Pare-feu incatif" "Activer : ufw enable"
     fi
 }
+
+
+check_open_ports(){
+    if ! command -v ss >/dev/null 2>&1; then 
+     record "NA" "_" "ss non installe" "ss non installe"
+     return
+     fi
+    
+    local ports=$(ss -tuln | awk  'NR>1 {print $5}'  | paste -sd '' -)
+    if [[ -z "$ports"]] then
+        record "NA" "_" "Ports ouverts" "Aucun port ouvert"
+    else
+    record "PASS" "_" "Ports ouverts" "Ports ouverts : $ports"
+
+    fi
+
+    
+    }
+
+
+
+
 
 
 
@@ -96,6 +118,8 @@ generate_report() {
 main() {
     check_file_permissions
     checkUID0
+    checkSSH
+    checkUFW
     generate_report
 }
 
