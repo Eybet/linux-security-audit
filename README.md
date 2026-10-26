@@ -1,4 +1,4 @@
-# Linux Security Audit Tool
+# Linux Server Security Audit Tool
 
 Un script Bash qui audite la configuration de sécurité d'une machine Linux et génère un
 rapport Markdown avec un **score** et des **recommandations**. Projet d'apprentissage en
