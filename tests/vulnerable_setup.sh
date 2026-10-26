@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
-#
-# vulnerable_setup.sh
-# Introduit volontairement des failles de sécurité sur une VM de TEST,
-# afin de vérifier que audit.sh les détecte bien.
-#
-# !!! NE JAMAIS LANCER CE SCRIPT SUR UNE MACHINE RÉELLE OU DE PRODUCTION !!!
-# Il affaiblit délibérément la sécurité du système.
-#
-# Garde-fou : le script refuse de s'exécuter si la variable I_UNDERSTAND
-# n'est pas positionnée. Usage :
-#   sudo I_UNDERSTAND=yes ./tests/vulnerable_setup.sh
-#
+
 set -uo pipefail
 
 if [[ "${I_UNDERSTAND:-}" != "yes" ]]; then

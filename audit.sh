@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 set -uo pipefail
 
@@ -94,7 +95,7 @@ check_open_ports(){
 
   check_world_writable(){
     local files
-    files==$(find / -xdev -type f -perm -0002 \
+    files==$(sudo find / -xdev -type f -perm -0002 \
                    -not -path '/proc/*' -not -path '/sys/*' 2>/dev/nul )
     
     if [[-z "$files"]] then
@@ -107,9 +108,6 @@ check_open_ports(){
     
     fi
   }
-
-
-
 
 
 
