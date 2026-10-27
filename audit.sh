@@ -2,6 +2,20 @@
 
 set -uo pipefail
 
+if [[ -t 1 ]]; then
+    BOLD=$'\e[1m'; DIM=$'\e[2m'; RESET=$'\e[0m'
+    GREEN=$'\e[32m'; RED=$'\e[31m'; YELLOW=$'\e[33m'; CYAN=$'\e[36m'
+else
+    BOLD=""; DIM=""; RESET=""; GREEN=""; RED=""; YELLOW=""; CYAN=""
+fi
+
+  print_header() {
+    printf '\n%s%s  Audit de securite — %s%s\n\n' "$BOLD" "$CYAN" "$(hostname)" "$RESET"
+    printf '%s  %-6s %-9s %s%s\n' "$DIM" "STATUT" "GRAVITE" "CONTROLE" "$RESET"
+    printf '%s  %s%s\n' "$DIM" "$(printf '─%.0s' $(seq 1 50))" "$RESET"
+}
+
+
 REPORT="audit_report.md"
 SCORE=100
 declare -a ROWS
@@ -17,6 +31,13 @@ record() {
             absence)  SCORE=$((SCORE -2)) ;;
         esac
     fi
+    local color
+    case "$statut" in
+        PASS) color="$GREEN" ;;
+        FAIL) color="$RED"   ;;
+        *)    color="$YELLOW" ;;
+    esac
+    printf '  %s%-6s%s %-9s %s\n' "$color" "$statut" "$RESET" "$gravite" "$titre"
     ROWS+=("| $statut | $gravite | $titre | $detail |")
 }
 
@@ -118,6 +139,20 @@ check_open_ports(){
     fi
   }
 
+  print_summary() {
+    local color="$GREEN"
+    (( SCORE < 80 )) && color="$YELLOW"
+    (( SCORE < 50 )) && color="$RED"
+    local filled=$(( SCORE / 5 ))          
+    printf '\n  Score : %s%s%d/100%s  [' "$BOLD" "$color" "$SCORE" "$RESET"
+    (( filled > 0 )) && printf '%s' "$color" && printf '█%.0s' $(seq 1 $filled)
+    (( filled < 20 )) && printf '%s' "$DIM" && printf '░%.0s' $(seq 1 $((20-filled)))
+    printf '%s]\n\n' "$RESET"
+}
+
+
+
+
 
 
 
@@ -137,12 +172,14 @@ generate_report() {
 }
 
 main() {
+    print_header
     check_file_permissions
     checkUID0
     checkSSH
     checkUFW
     check_open_ports
     check_world_writable
+    print_summary
     generate_report
 }
 
