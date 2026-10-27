@@ -1,5 +1,24 @@
 # Journal de bord
 
+## 2026-10-27 — Script terminé et validé
+
+**Fait**
+- Écriture des 6 contrôles dans `audit.sh` (droits fichiers, UID 0, SSH, pare-feu, ports,
+  world-writable).
+- Ajout d'une sortie terminal en couleur (PASS vert / FAIL rouge / NA jaune), colonnes alignées
+  avec `printf`, et une barre de score.
+- Tests : état **vulnerable** → 50/100 (4 failles détectées), état **propre** → 100/100.
+- Passage de `shellcheck` : aucun avertissement.
+
+**Appris / problèmes**
+- Les ports s'affichaient collés : corrigé avec `tr '\n' ','` pour forcer un séparateur.
+- Un tableau Markdown ne supporte pas de retour à la ligne dans une cellule : tout sur une ligne.
+- `printf '%-6s'` aligne une colonne sur 6 caractères : c'est ce qui rend la sortie lisible.
+
+**Prochaine fois**
+- Tester le script dans un conteneur Docker (les contrôles SSH/pare-feu doivent passer en NA).
+
+
 ## 2026-10-18 — Dossiers par service, failles volontaires, audit manuel
 
 **Fait**
